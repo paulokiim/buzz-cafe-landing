@@ -12,7 +12,7 @@ describe("landing data env links", () => {
       "ifood.com.br/delivery/sao-paulo-sp/buzz-cafe-bras/f82204bc-fb5d-4d71-950f-fda218b23ac9?utm_medium=share"
     );
     vi.stubEnv("KEETA_LINK", "url-eu.mykeeta.com/NikFPhsz");
-    vi.stubEnv("99FOOD_LINK", "https://oia.99app.com/dlp9/JIFaZ7");
+    vi.stubEnv("NINE_NINE_FOOD_LINK", "https://oia.99app.com/dlp9/JIFaZ7");
     vi.resetModules();
 
     const { channels } = await import("@/lib/landing-data");

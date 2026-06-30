@@ -79,7 +79,8 @@ const channelLinks = {
     ) ?? fallbackChannelLinks.keeta,
   "99food":
     normalizeExternalUrl(
-      process.env["99FOOD_LINK"] ?? process.env.NEXT_PUBLIC_BUZZ_99FOOD_URL
+      process.env["NINE_NINE_FOOD_LINK"] ??
+      process.env.NEXT_PUBLIC_BUZZ_99FOOD_URL
     ) ?? fallbackChannelLinks["99food"],
 } satisfies Record<ChannelKey, string>;
 
