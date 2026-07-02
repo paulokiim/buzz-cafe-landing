@@ -1,14 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import PedirPage from "@/app/pedir/page";
+import HomePage from "@/app/page";
 
-describe("PedirPage", () => {
+describe("HomePage", () => {
   it("renders the complete order page and records PageView on mount", async () => {
     vi.spyOn(window.console, "info").mockImplementation(() => undefined);
     vi.spyOn(window.console, "warn").mockImplementation(() => undefined);
 
-    render(<PedirPage />);
+    render(<HomePage />);
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Manhã Leve" })

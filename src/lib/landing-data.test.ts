@@ -77,12 +77,12 @@ describe("landing data contract", () => {
     );
   });
 
-  it("publishes local business structured data for the /pedir page", () => {
+  it("publishes local business structured data for the root page", () => {
     expect(cafeJsonLd).toMatchObject({
       "@type": "CafeOrCoffeeShop",
       areaServed: "Brás, São Paulo",
       name: "Buzz Café",
-      url: "https://buzzcafe.com.br/pedir",
+      url: "https://buzzcafe.com.br/",
     });
   });
 });

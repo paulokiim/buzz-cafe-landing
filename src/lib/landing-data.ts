@@ -339,7 +339,7 @@ export const cafeJsonLd = {
   "@context": "https://schema.org",
   "@type": "CafeOrCoffeeShop",
   name: "Buzz Café",
-  url: "https://buzzcafe.com.br/pedir",
+  url: "https://buzzcafe.com.br/",
   image: "https://buzzcafe.com.br/pedir-assets/hero-desktop.webp",
   address: {
     "@type": "PostalAddress",
