@@ -9,7 +9,12 @@ import type {
   HeroSlide,
   ImageAsset,
 } from "@/lib/landing-data";
-import { ASSET_BASE_PATH, ORDER_COUPON } from "@/lib/landing-data";
+import {
+  ASSET_BASE_PATH,
+  HERO_SEO_DESCRIPTION,
+  HERO_SEO_TITLE,
+  ORDER_REWARD_LABEL,
+} from "@/lib/landing-data";
 import { cn } from "@/lib/utils";
 
 type HeroCarouselProps = {
@@ -91,17 +96,26 @@ export function HeroCarousel({
         <div className="mx-auto grid w-full max-w-[1180px] gap-6 md:grid-cols-[minmax(0,1fr)_minmax(290px,380px)] md:items-end lg:grid-cols-[minmax(0,0.95fr)_minmax(360px,420px)]">
           <div className="buzz-hero-copy" key={activeSlide.key}>
             <h1
-              className="max-w-[11ch] text-[clamp(3.35rem,16vw,5.35rem)] leading-[0.9] font-normal tracking-[0] uppercase text-white drop-shadow-[0_3px_18px_rgba(0,0,0,0.34)] md:text-[clamp(4.1rem,9vw,6.4rem)] lg:text-[clamp(4.8rem,7.5vw,7.8rem)]"
+              className="max-w-[42ch] text-[0.95rem] leading-tight font-black tracking-[0] text-white uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.42)] md:text-[1.05rem]"
               id="hero-title"
+            >
+              {HERO_SEO_TITLE}
+            </h1>
+            <p
+              className="mt-2 max-w-[11ch] text-[clamp(3.35rem,16vw,5.35rem)] leading-[0.9] font-normal tracking-[0] uppercase text-white drop-shadow-[0_3px_18px_rgba(0,0,0,0.34)] md:mt-3 md:text-[clamp(4.1rem,9vw,6.4rem)] lg:text-[clamp(4.8rem,7.5vw,7.8rem)]"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               {activeSlide.title}
-            </h1>
+            </p>
             <p className="mt-4 max-w-[34ch] text-[1rem] leading-relaxed text-white/86 drop-shadow-[0_2px_10px_rgba(0,0,0,0.38)] md:mt-5 md:text-[1.04rem] lg:max-w-[42ch] lg:text-[1.15rem]">
-              {activeSlide.description}
+              {HERO_SEO_DESCRIPTION}
             </p>
             <p className="mt-4 text-sm font-black tracking-[0] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.35)] md:text-base">
-              Cupom: <span className="text-[var(--buzz-honey)]">{ORDER_COUPON}</span>.
+              Printou, mandou, ganhou:{" "}
+              <span className="text-[var(--buzz-honey)]">
+                {ORDER_REWARD_LABEL}
+              </span>
+              .
             </p>
           </div>
 

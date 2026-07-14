@@ -15,32 +15,37 @@ import {
   ASSET_BASE_PATH,
   cafeJsonLd,
   channels,
+  faqItems,
+  faqJsonLd,
   heroActions,
   heroSlides,
+  localSeoHighlights,
   menuItems,
-  ORDER_COUPON,
+  ORDER_REWARD,
+  ORDER_REWARD_LABEL,
   reasons,
+  storeContactSummary,
 } from "@/lib/landing-data";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Buzz Café | Café da manhã e brunch no delivery",
+  title: "Buzz Café no Brás | Cafeteria e café da manhã",
   description:
-    "Peça Buzz Café pelo iFood, Keeta ou 99 Food. Cafés, croissants, doces e combos para café da manhã, brunch ou pausa da tarde.",
+    "Peça cafés, doces, salgados, croissants e combos do Buzz Café na Rua Xavantes, 819, no Brás, perto do Pari. Delivery por iFood, Keeta e 99 Food.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Buzz Café | Café da manhã e brunch no delivery",
+    title: "Buzz Café no Brás | Cafeteria e café da manhã",
     description:
-      "Café, croissant e combos do Buzz pelo iFood, Keeta ou 99 Food.",
+      "Cafés, croissants, doces, salgados e combos do Buzz Café no Brás, perto do Pari.",
     url: "/",
     images: [
       {
         url: "/pedir-assets/hero-desktop.webp",
         width: 1440,
         height: 795,
-        alt: "Café, croissant e sanduíche do Buzz Café",
+        alt: "Café, croissant e sanduíche do Buzz Café no Brás",
       },
     ],
   },
@@ -68,14 +73,20 @@ export default function HomePage() {
       <main id="top">
         <HeroSection />
         <OrderPanel />
+        <LocalSeoSection />
         <WhySection />
         <MenuSection />
+        <FaqSection />
       </main>
       <Footer />
       <MobileOrderBar orderChannels={channels} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(cafeJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(cafeJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: toJsonLd(faqJsonLd) }}
       />
     </OrderTrackingProvider>
   );
@@ -94,12 +105,12 @@ function OrderPanel() {
     >
       <Reveal>
         <SectionHeading
-          eyebrow="Cupom de primeira compra"
+          eyebrow="Brinde no próximo pedido"
           id="pedido-title"
-          title={`Use ${ORDER_COUPON} em qualquer plataforma`}
+          title="Printou, mandou, ganhou!"
         >
-          O cupom {ORDER_COUPON} vale para uma compra por cliente no iFood,
-          Keeta ou 99 Food. Abra a plataforma, aplique o código e finalize por lá.
+          Peça pelo iFood, Keeta ou 99 Food. Depois, envie o print da avaliação
+          no WhatsApp para ganhar {ORDER_REWARD_LABEL} no próximo pedido.
         </SectionHeading>
       </Reveal>
 
@@ -144,18 +155,18 @@ function OrderPanel() {
               <div className="grid gap-3">
                 <Separator className="bg-[var(--buzz-line)]" />
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-bold text-[var(--buzz-muted)]">
-                    Código do cupom
+                  <span className="shrink-0 text-sm font-bold text-[var(--buzz-muted)]">
+                    Brinde
                   </span>
-                  <strong className="text-base font-black tracking-[0]">
-                    {channel.coupon}
+                  <strong className="max-w-[210px] text-right text-base leading-tight font-black tracking-[0]">
+                    {ORDER_REWARD}
                   </strong>
                 </div>
                 <Separator className="bg-[var(--buzz-line)]" />
               </div>
               <p className="text-sm leading-relaxed text-[var(--buzz-muted)]">
-                Válido uma vez por cliente. Use o código antes de concluir o
-                pedido.
+                Depois de avaliar sua experiência na plataforma, mande o print
+                no WhatsApp para receber no próximo pedido.
               </p>
               <ChannelAction
                 channel={channel}
@@ -213,6 +224,46 @@ function WhySection() {
   );
 }
 
+function LocalSeoSection() {
+  return (
+    <section
+      aria-labelledby="local-title"
+      className="mx-auto w-[min(1160px,calc(100%_-_36px))] pt-12 pb-7 md:pt-20"
+      id="local"
+    >
+      <Reveal>
+        <SectionHeading
+          compact
+          eyebrow="Cafeteria no Brás"
+          id="local-title"
+          title="Café, doces e salgados perto do Pari"
+        >
+          O Buzz Café fica na {storeContactSummary.address}. A página continua
+          focada em pedido rápido, mas também ajuda quem procura café da manhã,
+          brunch, doces e salgados na região do Brás e do Pari.
+        </SectionHeading>
+      </Reveal>
+      <ul className="grid list-none gap-3 p-0 md:grid-cols-3">
+        {localSeoHighlights.map((highlight, index) => (
+          <Reveal
+            as="li"
+            className="border-t border-[var(--buzz-line)] pt-5"
+            delay={index * 90}
+            key={highlight.title}
+          >
+            <h3 className="text-[1.08rem] leading-tight font-black tracking-[0]">
+              {highlight.title}
+            </h3>
+            <p className="mt-2 text-[var(--buzz-muted)]">
+              {highlight.description}
+            </p>
+          </Reveal>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function MenuSection() {
   return (
     <section
@@ -233,6 +284,35 @@ function MenuSection() {
       <Reveal delay={120}>
         <ImageCarousel items={menuItems} />
       </Reveal>
+    </section>
+  );
+}
+
+function FaqSection() {
+  return (
+    <section
+      aria-labelledby="faq-title"
+      className="mx-auto w-[min(900px,calc(100%_-_36px))] pt-2 pb-24 md:pb-32"
+      id="duvidas"
+    >
+      <Reveal>
+        <SectionHeading
+          compact
+          eyebrow="Dúvidas rápidas"
+          id="faq-title"
+          title="Antes de pedir no Buzz"
+        />
+      </Reveal>
+      <div className="divide-y divide-[var(--buzz-line)] border-y border-[var(--buzz-line)]">
+        {faqItems.map((item) => (
+          <details className="group py-4" key={item.question}>
+            <summary className="cursor-pointer list-none text-[1.02rem] font-black tracking-[0] marker:hidden">
+              {item.question}
+            </summary>
+            <p className="mt-2 text-[var(--buzz-muted)]">{item.answer}</p>
+          </details>
+        ))}
+      </div>
     </section>
   );
 }
@@ -294,4 +374,8 @@ function SectionHeading({
       ) : null}
     </div>
   );
+}
+
+function toJsonLd(payload: unknown) {
+  return JSON.stringify(payload).replace(/</g, "\\u003c");
 }

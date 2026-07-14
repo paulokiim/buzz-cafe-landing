@@ -3,11 +3,17 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { ASSET_BASE_PATH } from "@/lib/landing-data";
+import {
+  ASSET_BASE_PATH,
+  ORDER_REWARD_WHATSAPP_MESSAGE,
+} from "@/lib/landing-data";
+import { recordTrackingEvent } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 
 const WHATSAPP_URL =
-  "https://wa.me/5511917992193?text=Oi%2C%20Buzz%20Caf%C3%A9!%20Quero%20fazer%20um%20pedido%20com%20o%20cupom%20BUZZ10.";
+  `https://wa.me/5511917992193?text=${encodeURIComponent(
+    ORDER_REWARD_WHATSAPP_MESSAGE
+  )}`;
 
 export function SiteHeader() {
   const [isSolid, setIsSolid] = useState(false);
@@ -19,6 +25,14 @@ export function SiteHeader() {
 
     return () => window.removeEventListener("scroll", updateHeader);
   }, []);
+
+  const handleWhatsAppClick = () => {
+    recordTrackingEvent("Clique_WhatsApp", {
+      channel: "whatsapp",
+      destinationConfigured: true,
+      source: "next",
+    });
+  };
 
   return (
     <header
@@ -65,8 +79,11 @@ export function SiteHeader() {
           aria-label="Chamar Buzz Café no WhatsApp"
           className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366] px-3 py-2 text-white shadow-[0_8px_24px_rgba(37,211,102,0.26)] hover:bg-[#20bd5a] focus-visible:bg-[#20bd5a]"
           href={WHATSAPP_URL}
+          onClick={handleWhatsAppClick}
           rel="noopener noreferrer"
           target="_blank"
+          data-channel="whatsapp"
+          data-event="Clique_WhatsApp"
         >
           <span
             aria-hidden

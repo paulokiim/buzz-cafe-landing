@@ -29,4 +29,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   window.localStorage.clear();
   window.dataLayer = [];
+  delete window.fbq;
+  delete window.gtag;
+  window.history.replaceState({}, "", "/");
 });

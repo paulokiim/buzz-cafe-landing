@@ -1,10 +1,14 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 
 import { SiteHeader } from "@/components/pedir/site-header";
 
 describe("SiteHeader", () => {
   it("starts transparent and links the top CTA to WhatsApp", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window.console, "info").mockImplementation(() => undefined);
+    vi.spyOn(window.console, "warn").mockImplementation(() => undefined);
     Object.defineProperty(window, "scrollY", {
       configurable: true,
       value: 0,
@@ -25,10 +29,26 @@ describe("SiteHeader", () => {
       "href",
       expect.stringContaining("https://wa.me/5511917992193")
     );
+    expect(whatsappLink).toHaveAttribute(
+      "href",
+      expect.stringContaining("Avaliei%20meu%20pedido")
+    );
+    expect(whatsappLink).toHaveAttribute("data-event", "Clique_WhatsApp");
     expect(whatsappLink).toHaveAttribute("target", "_blank");
     expect(whatsappLink.querySelector("img")).toHaveAttribute(
       "src",
       expect.stringContaining("whatsapp-logo.svg")
+    );
+
+    await user.click(whatsappLink);
+
+    await waitFor(() =>
+      expect(window.dataLayer?.at(-1)).toMatchObject({
+        channel: "whatsapp",
+        destinationConfigured: true,
+        event: "Clique_WhatsApp",
+        source: "next",
+      })
     );
 
     window.scrollY = 80;

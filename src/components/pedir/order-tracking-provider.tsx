@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils";
 type TrackChannelInput = {
   channel: ChannelKey;
   channelLabel: string;
-  coupon: string;
   eventName: TrackingEventName;
   href: string;
 };
@@ -54,10 +53,9 @@ export function OrderTrackingProvider({
   }, []);
 
   const trackChannelClick = useCallback(
-    ({ channel, channelLabel, coupon, eventName, href }: TrackChannelInput) => {
+    ({ channel, channelLabel, eventName, href }: TrackChannelInput) => {
       recordTrackingEvent(eventName, {
         channel,
-        coupon,
         destinationConfigured: Boolean(href),
         source: "next",
       });

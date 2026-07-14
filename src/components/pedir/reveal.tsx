@@ -21,7 +21,8 @@ export function Reveal({
   ...props
 }: RevealProps) {
   const ref = useRef<HTMLElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const node = ref.current;
@@ -30,10 +31,23 @@ export function Reveal({
       return;
     }
 
-    if (typeof IntersectionObserver === "undefined") {
+    if (
+      typeof IntersectionObserver === "undefined" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
       const timer = window.setTimeout(() => setIsVisible(true), 0);
 
       return () => window.clearTimeout(timer);
+    }
+
+    const rect = node.getBoundingClientRect();
+    const startsInView = rect.top < window.innerHeight * 0.88 && rect.bottom > 0;
+
+    setIsVisible(startsInView);
+    setIsReady(true);
+
+    if (startsInView) {
+      return;
     }
 
     const observer = new IntersectionObserver(
@@ -45,14 +59,19 @@ export function Reveal({
       },
       { rootMargin: "0px 0px -12% 0px", threshold: 0.16 }
     );
+    const safetyTimer = window.setTimeout(() => setIsVisible(true), 2500);
 
     observer.observe(node);
 
-    return () => observer.disconnect();
+    return () => {
+      window.clearTimeout(safetyTimer);
+      observer.disconnect();
+    };
   }, []);
 
   const sharedProps = {
     className: cn("buzz-reveal", className),
+    "data-reveal-ready": isReady ? "true" : undefined,
     "data-reveal": isVisible ? "visible" : "hidden",
     "data-reveal-effect": effect,
     style: {

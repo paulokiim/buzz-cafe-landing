@@ -32,7 +32,6 @@ export function ChannelAction({
     trackChannelClick({
       channel: channel.key,
       channelLabel: channel.name,
-      coupon: channel.coupon,
       eventName: channel.eventName,
       href,
     });
@@ -72,7 +71,6 @@ export function ChannelAction({
         aria-label={ariaLabel}
         className={actionClassName}
         data-channel={channel.key}
-        data-coupon={channel.coupon}
         data-event={channel.eventName}
         href={href}
         onClick={handleClick}
@@ -89,7 +87,6 @@ export function ChannelAction({
       aria-label={ariaLabel}
       className={actionClassName}
       data-channel={channel.key}
-      data-coupon={channel.coupon}
       data-event={channel.eventName}
       onClick={handleClick}
       type="button"

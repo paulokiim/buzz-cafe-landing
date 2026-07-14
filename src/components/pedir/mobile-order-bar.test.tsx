@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { MobileOrderBar } from "@/components/pedir/mobile-order-bar";
 import { OrderTrackingProvider } from "@/components/pedir/order-tracking-provider";
-import { ORDER_COUPON, channels } from "@/lib/landing-data";
+import { channels } from "@/lib/landing-data";
 
 describe("MobileOrderBar", () => {
   it("appears after the user scrolls past the hero", async () => {
@@ -48,7 +48,6 @@ describe("MobileOrderBar", () => {
     await waitFor(() =>
       expect(window.dataLayer?.at(-1)).toMatchObject({
         channel: "99food",
-        coupon: ORDER_COUPON,
         destinationConfigured: true,
         event: "Clique_99Food",
         source: "next",

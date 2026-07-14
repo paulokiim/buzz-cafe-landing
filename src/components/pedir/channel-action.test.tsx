@@ -4,11 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { ChannelAction } from "@/components/pedir/channel-action";
 import { OrderTrackingProvider } from "@/components/pedir/order-tracking-provider";
-import {
-  ORDER_COUPON,
-  channels,
-  type ChannelConfig,
-} from "@/lib/landing-data";
+import { channels, type ChannelConfig } from "@/lib/landing-data";
 
 function renderWithProvider(children: React.ReactNode) {
   vi.spyOn(window.console, "info").mockImplementation(() => undefined);
@@ -39,7 +35,6 @@ describe("ChannelAction", () => {
     );
     expect(window.dataLayer?.at(-1)).toMatchObject({
       channel: "ifood",
-      coupon: ORDER_COUPON,
       destinationConfigured: false,
       event: "Clique_iFood",
       source: "next",
@@ -68,7 +63,6 @@ describe("ChannelAction", () => {
     );
     expect(window.dataLayer?.at(-1)).toMatchObject({
       channel: "keeta",
-      coupon: ORDER_COUPON,
       destinationConfigured: true,
       event: "Clique_Keeta",
       source: "next",

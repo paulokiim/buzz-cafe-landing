@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import {
+  AnalyticsNoScript,
+  AnalyticsProviders,
+} from "@/components/analytics/analytics-providers";
+import { SITE_ORIGIN } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,13 +18,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://buzzcafe.com.br"),
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: "Buzz Café",
     template: "%s | Buzz Café",
   },
   description:
-    "Peça Buzz Café no delivery pelo iFood, Keeta ou 99 Food. Cafés, croissants, doces e combos para café da manhã, brunch ou pausa da tarde.",
+    "Cafeteria no Brás para pedir café da manhã, cafés, croissants, doces, salgados e combos perto do Pari.",
   applicationName: "Buzz Café",
   openGraph: {
     siteName: "Buzz Café",
@@ -38,7 +43,11 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <AnalyticsNoScript />
+        {children}
+        <AnalyticsProviders />
+      </body>
     </html>
   );
 }

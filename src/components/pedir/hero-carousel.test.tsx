@@ -3,7 +3,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { HeroCarousel } from "@/components/pedir/hero-carousel";
 import { OrderTrackingProvider } from "@/components/pedir/order-tracking-provider";
-import { heroActions, heroProofPoints, heroSlides } from "@/lib/landing-data";
+import {
+  HERO_SEO_TITLE,
+  heroActions,
+  heroProofPoints,
+  heroSlides,
+} from "@/lib/landing-data";
 
 describe("HeroCarousel", () => {
   afterEach(() => {
@@ -22,8 +27,9 @@ describe("HeroCarousel", () => {
     );
 
     expect(
-      screen.getByRole("heading", { level: 1, name: heroSlides[0].title })
+      screen.getByRole("heading", { level: 1, name: HERO_SEO_TITLE })
     ).toBeInTheDocument();
+    expect(screen.getByText(heroSlides[0].title)).toBeInTheDocument();
     expect(screen.queryByText(heroSlides[0].eyebrow)).not.toBeInTheDocument();
     expect(screen.queryByText("Buzz Café")).not.toBeInTheDocument();
     heroProofPoints.forEach((proofPoint) => {
@@ -46,16 +52,12 @@ describe("HeroCarousel", () => {
       vi.advanceTimersByTime(2999);
     });
 
-    expect(
-      screen.getByRole("heading", { level: 1, name: heroSlides[0].title })
-    ).toBeInTheDocument();
+    expect(screen.getByText(heroSlides[0].title)).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(1);
     });
 
-    expect(
-      screen.getByRole("heading", { level: 1, name: heroSlides[1].title })
-    ).toBeInTheDocument();
+    expect(screen.getByText(heroSlides[1].title)).toBeInTheDocument();
   });
 });
