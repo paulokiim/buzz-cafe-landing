@@ -48,13 +48,18 @@ describe("landing data contract", () => {
     ]);
   });
 
-  it("provides useful fallback links when production URLs are not configured", () => {
+  it("uses the store deep links even when hosted env values are unavailable", () => {
     expect(channels.map(({ href, key }) => ({ href, key }))).toEqual([
       { href: fallbackChannelLinks.ifood, key: "ifood" },
       { href: fallbackChannelLinks.keeta, key: "keeta" },
       { href: fallbackChannelLinks["99food"], key: "99food" },
     ]);
-    expect(fallbackChannelLinks["99food"]).toContain("99app.com/99food");
+    expect(fallbackChannelLinks).toEqual({
+      ifood:
+        "https://ifood.com.br/delivery/sao-paulo-sp/buzz-cafe-bras/f82204bc-fb5d-4d71-950f-fda218b23ac9?utm_medium=share",
+      keeta: "https://url-eu.mykeeta.com/NikFPhsz",
+      "99food": "https://oia.99app.com/dlp9/JIFaZ7",
+    });
   });
 
   it("presents Keeta as an order channel, not as a freight-comparison path", () => {

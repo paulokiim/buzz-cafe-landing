@@ -65,9 +65,10 @@ export type HeroSlide = {
 };
 
 export const fallbackChannelLinks = {
-  ifood: "https://www.ifood.com.br/busca?q=buzz%20caf%C3%A9",
-  keeta: "https://www.keeta-global.com/BR/pt-BR",
-  "99food": "https://99app.com/99food/",
+  ifood:
+    "https://ifood.com.br/delivery/sao-paulo-sp/buzz-cafe-bras/f82204bc-fb5d-4d71-950f-fda218b23ac9?utm_medium=share",
+  keeta: "https://url-eu.mykeeta.com/NikFPhsz",
+  "99food": "https://oia.99app.com/dlp9/JIFaZ7",
 } satisfies Record<ChannelKey, string>;
 
 function normalizeExternalUrl(url: string | undefined): string | undefined {
