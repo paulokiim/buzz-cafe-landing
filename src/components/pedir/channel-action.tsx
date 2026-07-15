@@ -53,6 +53,7 @@ export function ChannelAction({
           fill
           sizes={`${logo.width}px`}
           src={logo.src}
+          unoptimized
         />
       </span>
       <span className={cn(iconOnly && "sr-only")}>{label}</span>

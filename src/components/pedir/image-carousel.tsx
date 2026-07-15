@@ -117,6 +117,7 @@ export function ImageCarousel({ items }: ImageCarouselProps) {
                 loading={index === 0 ? "eager" : "lazy"}
                 sizes="(min-width: 1024px) 31vw, (min-width: 640px) 52vw, 82vw"
                 src={item.image.src}
+                unoptimized
               />
             </div>
             <div className="p-[18px]">

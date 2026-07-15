@@ -141,6 +141,7 @@ function OrderPanel() {
                     fill
                     sizes={`${channel.logo.width}px`}
                     src={channel.logo.src}
+                    unoptimized
                   />
                 </span>
               </div>
@@ -327,6 +328,7 @@ function Footer() {
           fill
           sizes="150px"
           src={`${ASSET_BASE_PATH}/brand-logo-header-transparent.webp`}
+          unoptimized
         />
       </span>
       <div className="grid gap-0.5 sm:mr-auto">

@@ -71,6 +71,7 @@ export function SiteHeader() {
             priority
             sizes="(min-width: 1024px) 194px, (min-width: 640px) 174px, 126px"
             src={`${ASSET_BASE_PATH}/brand-logo-header-transparent.webp`}
+            unoptimized
           />
         </span>
       </a>
@@ -95,6 +96,7 @@ export function SiteHeader() {
               fill
               sizes="20px"
               src={`${ASSET_BASE_PATH}/whatsapp-logo.svg`}
+              unoptimized
             />
           </span>
           WhatsApp

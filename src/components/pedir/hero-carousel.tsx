@@ -86,6 +86,7 @@ export function HeroCarousel({
               sizes="100vw"
               src={slide.image.src}
               style={{ objectPosition: slide.imagePosition }}
+              unoptimized
             />
           </div>
         ))}
