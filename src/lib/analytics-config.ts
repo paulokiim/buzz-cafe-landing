@@ -1,13 +1,6 @@
-const truthyEnvValues = new Set(["1", "true", "yes", "on"]);
-
 function cleanEnvValue(value: string | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed || undefined;
-}
-
-function cleanBooleanEnvValue(value: string | undefined): boolean {
-  const trimmed = value?.trim().toLowerCase();
-  return Boolean(trimmed && truthyEnvValues.has(trimmed));
 }
 
 export const analyticsConfig = {
@@ -22,9 +15,6 @@ export const analyticsConfig = {
     process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL
   ),
   metaPixelId: cleanEnvValue(process.env.NEXT_PUBLIC_META_PIXEL_ID),
-  enableVercelCustomEvents: cleanBooleanEnvValue(
-    process.env.NEXT_PUBLIC_VERCEL_CUSTOM_EVENTS
-  ),
 } as const;
 
 export const shouldLoadDirectGoogleTag =

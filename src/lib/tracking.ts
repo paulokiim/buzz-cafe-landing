@@ -4,8 +4,6 @@ import type {
   TrackingSource,
 } from "@/lib/landing-data";
 import { analyticsConfig } from "@/lib/analytics-config";
-import type { WebVitalPayload } from "@/components/analytics/web-vitals-reporter";
-import { track } from "@vercel/analytics";
 
 export type TrackingDetails = {
   destinationConfigured?: boolean;
@@ -41,7 +39,7 @@ export type RecordTrackingOptions = {
 
 declare global {
   interface Window {
-    dataLayer?: Array<TrackingPayload | WebVitalPayload | Record<string, unknown>>;
+    dataLayer?: Array<TrackingPayload | Record<string, unknown>>;
     fbq?: MetaPixelFunction;
     gtag?: GoogleTagFunction;
   }
@@ -113,7 +111,6 @@ export function recordTrackingEvent(
   targetWindow.console.info("[Buzz Cafe tracking]", eventPayload);
   sendToGoogleAnalytics(targetWindow, eventPayload);
   sendToMetaPixel(targetWindow, eventPayload);
-  sendToVercelCustomEvents(targetWindow, eventPayload);
 
   return eventPayload;
 }
@@ -204,37 +201,6 @@ function sendToMetaPixel(
   });
 }
 
-function sendToVercelCustomEvents(
-  targetWindow: TrackingWindow,
-  eventPayload: TrackingPayload
-) {
-  if (!analyticsConfig.enableVercelCustomEvents || eventPayload.event === "PageView") {
-    return;
-  }
-
-  try {
-    track(
-      toVercelEventName(eventPayload),
-      compactTrackingProperties(eventPayload)
-    );
-  } catch (error) {
-    targetWindow.console.warn("[Buzz Cafe tracking] Vercel custom event falhou", error);
-  }
-}
-
-function compactTrackingProperties(eventPayload: TrackingPayload) {
-  return compactAnalyticsProperties({
-    channel: eventPayload.channel,
-    destinationConfigured: eventPayload.destinationConfigured,
-    page: eventPayload.page,
-    source: eventPayload.source,
-    utmCampaign: eventPayload.utmCampaign,
-    utmMedium: eventPayload.utmMedium,
-    utmRegion: eventPayload.utmRegion,
-    utmSource: eventPayload.utmSource,
-  });
-}
-
 function compactAnalyticsProperties<
   T extends Record<string, string | number | boolean | undefined>,
 >(properties: T) {
@@ -244,14 +210,6 @@ function compactAnalyticsProperties<
 }
 
 function toGoogleAnalyticsEventName(eventPayload: TrackingPayload) {
-  if (eventPayload.event === "Clique_WhatsApp") {
-    return "whatsapp_click";
-  }
-
-  return "order_channel_click";
-}
-
-function toVercelEventName(eventPayload: TrackingPayload) {
   if (eventPayload.event === "Clique_WhatsApp") {
     return "whatsapp_click";
   }

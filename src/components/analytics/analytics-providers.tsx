@@ -1,5 +1,3 @@
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 
 import {
@@ -7,7 +5,6 @@ import {
   shouldLoadDirectGoogleTag,
   shouldLoadDirectMetaPixel,
 } from "@/lib/analytics-config";
-import { WebVitalsReporter } from "./web-vitals-reporter";
 
 export function AnalyticsProviders() {
   const {
@@ -19,10 +16,6 @@ export function AnalyticsProviders() {
 
   return (
     <>
-      <Analytics />
-      <SpeedInsights />
-      <WebVitalsReporter />
-
       {googleTagManagerId ? (
         <Script id="buzz-google-tag-manager" strategy="afterInteractive">
           {`

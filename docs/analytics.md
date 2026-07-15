@@ -2,7 +2,7 @@
 
 ## Variaveis de ambiente
 
-Configure estas variaveis no projeto Vercel `buzz-cafe-landing`.
+Configure estas variaveis no ambiente hospedado do Sites.
 
 ```env
 NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=GTM-XXXXXXX
@@ -10,7 +10,6 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_META_PIXEL_ID=000000000000000
 NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID=AW-000000000
 NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=optional_label
-NEXT_PUBLIC_VERCEL_CUSTOM_EVENTS=false
 ```
 
 Preferencia operacional: use `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID` como fonte principal. Quando GTM estiver configurado, GA4, Meta Pixel e Google Ads devem ser adicionados dentro do container do GTM para evitar duplicidade de pageviews.
@@ -31,9 +30,6 @@ Eventos de clique tambem sao encaminhados quando os destinos existem:
 
 - GA4 direto: `order_channel_click` ou `whatsapp_click`
 - Meta Pixel: `OrderChannelClick` customizado ou `Contact` para WhatsApp
-- Vercel custom events: `order_channel_click` ou `whatsapp_click`, somente quando `NEXT_PUBLIC_VERCEL_CUSTOM_EVENTS=true`
-
-Core Web Vitals tambem entram no `dataLayer` como `WebVital` e, quando `gtag` direto estiver carregado, sao enviados como `web_vital`.
 
 ## Parametros de campanha
 
@@ -52,4 +48,4 @@ Campos capturados no payload:
 - `utm_term`
 - `utm_region`
 
-Use `utm_region` para bairro/regiao/campanha local. Localizacao por IP em GA4/Vercel e aproximada; UTMs por QR/campanha sao mais confiaveis para acao operacional.
+Use `utm_region` para bairro/regiao/campanha local. Localizacao por IP em GA4 e aproximada; UTMs por QR/campanha sao mais confiaveis para acao operacional.
