@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Coffee, Croissant, ShoppingBag } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -135,13 +134,10 @@ function OrderPanel() {
                     width: channel.logo.width,
                   }}
                 >
-                  <Image
+                  <img
                     alt={channel.logo.alt}
-                    className="object-contain"
-                    fill
-                    sizes={`${channel.logo.width}px`}
+                    className="absolute inset-0 h-full w-full object-contain"
                     src={channel.logo.src}
-                    unoptimized
                   />
                 </span>
               </div>
@@ -322,13 +318,10 @@ function Footer() {
   return (
     <footer className="flex flex-col items-start gap-5 border-t border-[var(--buzz-line)] bg-[var(--buzz-ink)] px-[18px] pt-6 pb-24 text-white sm:flex-row sm:items-center sm:px-16 sm:pb-8">
       <span className="relative block aspect-[491/190] w-[150px]">
-        <Image
+        <img
           alt="Buzz Café"
-          className="object-contain brightness-0 invert"
-          fill
-          sizes="150px"
+          className="absolute inset-0 h-full w-full object-contain brightness-0 invert"
           src={`${ASSET_BASE_PATH}/brand-logo-header-transparent.webp`}
-          unoptimized
         />
       </span>
       <div className="grid gap-0.5 sm:mr-auto">

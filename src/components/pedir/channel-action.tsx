@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-
 import { buttonVariants } from "@/components/ui/button";
 import type { ChannelConfig, ImageAsset } from "@/lib/landing-data";
 import { cn } from "@/lib/utils";
@@ -47,13 +45,10 @@ export function ChannelAction({
         )}
         style={{ height: logo.height, width: logo.width }}
       >
-        <Image
+        <img
           alt={logo.alt}
-          className="object-contain"
-          fill
-          sizes={`${logo.width}px`}
+          className="absolute inset-0 h-full w-full object-contain"
           src={logo.src}
-          unoptimized
         />
       </span>
       <span className={cn(iconOnly && "sr-only")}>{label}</span>

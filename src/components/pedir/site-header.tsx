@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import {
@@ -61,17 +60,13 @@ export function SiteHeader() {
         href="#top"
       >
         <span className="relative block h-[49px] w-[126px] sm:h-[67px] sm:w-[174px] lg:h-[75px] lg:w-[194px]">
-          <Image
+          <img
             alt="Buzz Café"
             className={cn(
-              "object-contain",
+              "absolute inset-0 h-full w-full object-contain",
               !isSolid && "drop-shadow-[0_2px_8px_rgba(255,250,242,0.48)]"
             )}
-            fill
-            priority
-            sizes="(min-width: 1024px) 194px, (min-width: 640px) 174px, 126px"
             src={`${ASSET_BASE_PATH}/brand-logo-header-transparent.webp`}
-            unoptimized
           />
         </span>
       </a>
@@ -90,13 +85,10 @@ export function SiteHeader() {
             aria-hidden
             className="relative block size-5 shrink-0 overflow-hidden rounded-full ring-1 ring-white/60"
           >
-            <Image
+            <img
               alt=""
-              className="object-contain"
-              fill
-              sizes="20px"
+              className="absolute inset-0 h-full w-full object-contain"
               src={`${ASSET_BASE_PATH}/whatsapp-logo.svg`}
-              unoptimized
             />
           </span>
           WhatsApp
