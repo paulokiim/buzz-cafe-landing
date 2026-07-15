@@ -17,13 +17,36 @@ describe("landing data env links", () => {
 
     const { channels } = await import("@/lib/landing-data");
 
-    expect(channels.map(({ href, key }) => ({ href, key }))).toEqual([
+    expect(
+      channels.map(({ href, key }) => {
+        const url = new URL(href);
+
+        return {
+          content: url.searchParams.get("utm_content"),
+          key,
+          medium: url.searchParams.get("utm_medium"),
+          source: url.searchParams.get("utm_source"),
+        };
+      })
+    ).toEqual([
       {
-        href: "https://ifood.com.br/delivery/sao-paulo-sp/buzz-cafe-bras/f82204bc-fb5d-4d71-950f-fda218b23ac9?utm_medium=share",
+        content: "ifood",
         key: "ifood",
+        medium: "referral",
+        source: "buzzcafe.com.br",
       },
-      { href: "https://url-eu.mykeeta.com/NikFPhsz", key: "keeta" },
-      { href: "https://oia.99app.com/dlp9/JIFaZ7", key: "99food" },
+      {
+        content: "keeta",
+        key: "keeta",
+        medium: "referral",
+        source: "buzzcafe.com.br",
+      },
+      {
+        content: "99food",
+        key: "99food",
+        medium: "referral",
+        source: "buzzcafe.com.br",
+      },
     ]);
   });
 });

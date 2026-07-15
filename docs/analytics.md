@@ -49,3 +49,15 @@ Campos capturados no payload:
 - `utm_region`
 
 Use `utm_region` para bairro/regiao/campanha local. Localizacao por IP em GA4 e aproximada; UTMs por QR/campanha sao mais confiaveis para acao operacional.
+
+## Links de saida para os apps
+
+Os links de pedido para iFood, Keeta e 99 Food usam a mesma taxonomia:
+
+- `utm_source=buzzcafe.com.br`
+- `utm_medium=referral`
+- `utm_campaign=pedidos_delivery`
+- `utm_content=ifood`, `keeta` ou `99food`
+- `utm_region=bras`
+
+O `utm_content` identifica qual canal recebeu o clique sem alterar o deep link da loja.

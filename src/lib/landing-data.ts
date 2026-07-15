@@ -71,6 +71,13 @@ export const fallbackChannelLinks = {
   "99food": "https://oia.99app.com/dlp9/JIFaZ7",
 } satisfies Record<ChannelKey, string>;
 
+export const OUTBOUND_ORDER_UTMS = {
+  utm_source: "buzzcafe.com.br",
+  utm_medium: "referral",
+  utm_campaign: "pedidos_delivery",
+  utm_region: "bras",
+} as const;
+
 function normalizeExternalUrl(url: string | undefined): string | undefined {
   const trimmedUrl = url?.trim();
 
@@ -85,7 +92,19 @@ function normalizeExternalUrl(url: string | undefined): string | undefined {
   return `https://${trimmedUrl}`;
 }
 
-const channelLinks = {
+function addOutboundOrderTracking(url: string, channel: ChannelKey): string {
+  const trackedUrl = new URL(url);
+
+  for (const [key, value] of Object.entries(OUTBOUND_ORDER_UTMS)) {
+    trackedUrl.searchParams.set(key, value);
+  }
+
+  trackedUrl.searchParams.set("utm_content", channel);
+
+  return trackedUrl.toString();
+}
+
+const configuredChannelLinks = {
   ifood:
     normalizeExternalUrl(
       process.env.IFOOD_LINK ?? process.env.NEXT_PUBLIC_BUZZ_IFOOD_URL
@@ -100,6 +119,13 @@ const channelLinks = {
       process.env.NEXT_PUBLIC_BUZZ_99FOOD_URL
     ) ?? fallbackChannelLinks["99food"],
 } satisfies Record<ChannelKey, string>;
+
+const channelLinks = Object.fromEntries(
+  CHANNEL_KEYS.map((channel) => [
+    channel,
+    addOutboundOrderTracking(configuredChannelLinks[channel], channel),
+  ])
+) as Record<ChannelKey, string>;
 
 export const channels = [
   {
