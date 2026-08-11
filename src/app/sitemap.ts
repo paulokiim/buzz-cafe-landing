@@ -18,5 +18,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
         `${SITE_ORIGIN}/pedir-assets/combos/matcha_crunch_single.png`,
       ],
     },
+    {
+      url: `${SITE_ORIGIN}/loja`,
+      lastModified: LAST_MODIFIED,
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
   ];
 }
