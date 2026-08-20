@@ -35,13 +35,17 @@ describe("public store edge proxy", () => {
     const response = await proxyPublicStoreRequest(
       request,
       "/loja/loja-inicial",
-      { fetcher, mode: "html", upstreamOrigin: "https://pdv.buzzcafe.com.br" },
+      {
+        fetcher,
+        mode: "html",
+        upstreamOrigin: "https://buzz-cafe-pdv.p12ulokr.chatgpt.site",
+      },
     );
 
     const upstreamRequest = fetcher.mock.calls[0]?.[0];
     expect(upstreamRequest).toBeInstanceOf(Request);
     expect(upstreamRequest?.url).toBe(
-      "https://pdv.buzzcafe.com.br/loja/loja-inicial?utm_source=qr",
+      "https://buzz-cafe-pdv.p12ulokr.chatgpt.site/loja/loja-inicial?utm_source=qr",
     );
     expect(upstreamRequest?.headers.get("cookie")).toBeNull();
     expect(upstreamRequest?.headers.get("x-untrusted-header")).toBeNull();
@@ -74,7 +78,7 @@ describe("public store edge proxy", () => {
             headers: { "content-type": "text/html" },
           }),
         mode: "html",
-        upstreamOrigin: "https://pdv.buzzcafe.com.br",
+        upstreamOrigin: "https://buzz-cafe-pdv.p12ulokr.chatgpt.site",
       },
     );
 
@@ -112,7 +116,11 @@ describe("public store edge proxy", () => {
     const response = await proxyPublicStoreRequest(
       request,
       "/api/public/stores/loja-inicial/checkouts",
-      { fetcher, mode: "passthrough", upstreamOrigin: "https://pdv.buzzcafe.com.br" },
+      {
+        fetcher,
+        mode: "passthrough",
+        upstreamOrigin: "https://buzz-cafe-pdv.p12ulokr.chatgpt.site",
+      },
     );
 
     const upstreamRequest = fetcher.mock.calls[0]?.[0];
@@ -172,7 +180,7 @@ describe("public store edge proxy", () => {
       {
         fetcher,
         mode: "passthrough",
-        upstreamOrigin: "https://pdv.buzzcafe.com.br",
+        upstreamOrigin: "https://buzz-cafe-pdv.p12ulokr.chatgpt.site",
       },
     );
 
@@ -190,7 +198,30 @@ describe("public store edge proxy", () => {
       .toThrow("Caminho público inválido");
   });
 
-  it("rejects an upstream outside the production and localhost allowlist", async () => {
+  it("uses the exact direct Sites origin as the production default", async () => {
+    const fetcher = vi.fn<(request: Request) => Promise<Response>>(
+      async () => new Response("ok"),
+    );
+
+    const response = await proxyPublicStoreRequest(
+      new Request("https://buzzcafe.com.br/loja"),
+      "/loja",
+      { fetcher, mode: "html" },
+    );
+
+    expect(response.status).toBe(200);
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher.mock.calls[0]?.[0].url).toBe(
+      "https://buzz-cafe-pdv.p12ulokr.chatgpt.site/loja",
+    );
+  });
+
+  it.each([
+    "https://pdv.buzzcafe.com.br",
+    "https://other.p12ulokr.chatgpt.site",
+    "https://buzz-cafe-pdv.p12ulokr.chatgpt.site.evil.example",
+    "https://buzz-cafe-pdv.p12ulokr.chatgpt.site:444",
+  ])("rejects non-allowlisted upstream %s", async (upstreamOrigin) => {
     const fetcher = vi.fn<(request: Request) => Promise<Response>>();
 
     const response = await proxyPublicStoreRequest(
@@ -199,7 +230,7 @@ describe("public store edge proxy", () => {
       {
         fetcher,
         mode: "html",
-        upstreamOrigin: "https://untrusted.example",
+        upstreamOrigin,
       },
     );
 

@@ -1,4 +1,4 @@
-const PRODUCTION_UPSTREAM_ORIGIN = "https://pdv.buzzcafe.com.br";
+const PRODUCTION_UPSTREAM_ORIGIN = "https://buzz-cafe-pdv.p12ulokr.chatgpt.site";
 const PUBLIC_ORIGIN = "https://buzzcafe.com.br";
 const UPSTREAM_TIMEOUT_MS = 30_000;
 const STOREFRONT_CSP = [
