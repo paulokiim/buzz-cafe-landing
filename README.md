@@ -20,23 +20,21 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 ## Loja pública
 
-`/loja` é a borda pública da loja. Ela encaminha apenas as rotas públicas da
-vitrine para o PDV e não envia os cookies do visitante ao painel.
+`/loja` e `/loja/<slug>` redirecionam temporariamente para a vitrine hospedada
+no Sites em `https://pdv.buzzcafe.com.br/loja`, preservando os parâmetros da
+campanha. A landing não atua como proxy da API nem recebe credenciais do backend.
 
-Rotas expostas pela borda:
+As antigas rotas de proxy falham fechadas com `404` e `Cache-Control: no-store`:
 
-- `/loja` e `/loja/<slug>` para a vitrine; `/loja/loja-inicial` redireciona
-  permanentemente para `/loja`.
-- `/api/public/<caminho>` para a API pública, `/loja-assets/<caminho>` para
-  assets e `/media/<caminho>` para mídia.
+- `/api/public/<caminho>`
+- `/loja-assets/<caminho>`
+- `/media/<caminho>`
 
-Variáveis de ambiente para o rollout:
+Não há variável de ambiente da loja pública nesta aplicação. No rollout:
 
-- `PUBLIC_PROXY_SECRET` (obrigatória; não inclua o valor no repositório)
-- `PDV_PUBLIC_UPSTREAM_ORIGIN` (opcional)
-
-No rollout, configure e valide primeiro o PDV para aceitar o segredo do proxy;
-depois configure a landing com o mesmo segredo e publique a borda pública.
+1. publique e homologue primeiro o frontend do PDV/Sites e o backend Render;
+2. confirme que `https://pdv.buzzcafe.com.br/loja` está saudável;
+3. somente então publique este redirecionamento na landing.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
