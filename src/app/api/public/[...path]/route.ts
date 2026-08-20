@@ -1,23 +1,16 @@
-import {
-  proxyPublicStoreRequest,
-  publicProxyPath,
-} from "@/lib/public-store-proxy";
-
-type PublicApiContext = {
-  params: Promise<{ path: string[] }>;
-};
-
-async function publicApi(request: Request, context: PublicApiContext) {
-  try {
-    const { path } = await context.params;
-    return proxyPublicStoreRequest(
-      request,
-      publicProxyPath("/api/public", path),
-      { mode: "passthrough" },
-    );
-  } catch {
-    return Response.json({ error: "Rota pública inválida." }, { status: 404 });
-  }
+function publicApi(request: Request) {
+  return new Response(
+    request.method === "HEAD"
+      ? null
+      : JSON.stringify({ error: "Rota pública indisponível." }),
+    {
+      headers: {
+        "cache-control": "no-store",
+        "content-type": "application/json; charset=utf-8",
+      },
+      status: 404,
+    },
+  );
 }
 
 export {
