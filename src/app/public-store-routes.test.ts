@@ -5,8 +5,11 @@ import {
   POST as postPublicApi,
 } from "@/app/api/public/[...path]/route";
 import { GET as getStoreAsset } from "@/app/loja-assets/[...path]/route";
-import { GET as getStoreAlias } from "@/app/loja/[storeSlug]/route";
-import { GET as getStore } from "@/app/loja/route";
+import {
+  GET as getStoreAlias,
+  HEAD as headStoreAlias,
+} from "@/app/loja/[storeSlug]/route";
+import { GET as getStore, HEAD as headStore } from "@/app/loja/route";
 import { GET as getPublicMedia } from "@/app/media/[...path]/route";
 
 afterEach(() => {
@@ -14,31 +17,78 @@ afterEach(() => {
 });
 
 describe("public storefront routes", () => {
-  it("serves the primary store at /loja", async () => {
-    const upstream = vi.fn<(request: Request) => Promise<Response>>(
-      async () =>
-        new Response("<html>Loja Buzz</html>", {
-          headers: { "content-type": "text/html" },
-        }),
-    );
+  it("temporarily redirects the primary store to the fixed PDV storefront", async () => {
+    const upstream = vi.fn<(request: Request) => Promise<Response>>();
     vi.stubGlobal("fetch", upstream);
 
-    const response = await getStore(new Request("http://localhost:3001/loja"));
-
-    expect(response.status).toBe(200);
-    expect(upstream.mock.calls[0]?.[0].url).toBe(
-      "http://localhost:3004/loja",
+    const response = await getStore(
+      new Request(
+        "https://attacker.example/loja?utm_source=meta&item=latte%20buzz",
+      ),
     );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://pdv.buzzcafe.com.br/loja?utm_source=meta&item=latte%20buzz",
+    );
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(upstream).not.toHaveBeenCalled();
   });
 
-  it("redirects the legacy primary-store slug to the short public URL", async () => {
+  it("redirects HEAD without a response body", async () => {
+    const response = await headStore(
+      new Request("https://buzzcafe.com.br/loja?campaign=launch", {
+        method: "HEAD",
+      }),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://pdv.buzzcafe.com.br/loja?campaign=launch",
+    );
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.text()).toBe("");
+  });
+
+  it("normalizes the legacy primary-store slug to the fixed short PDV URL", async () => {
     const response = await getStoreAlias(
-      new Request("http://localhost:3001/loja/loja-inicial"),
+      new Request(
+        "https://attacker.example/loja/loja-inicial?utm_medium=paid-social",
+      ),
       { params: Promise.resolve({ storeSlug: "loja-inicial" }) },
     );
 
-    expect(response.status).toBe(308);
-    expect(response.headers.get("location")).toBe("http://localhost:3001/loja");
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://pdv.buzzcafe.com.br/loja?utm_medium=paid-social",
+    );
+    expect(response.headers.get("cache-control")).toBe("no-store");
+  });
+
+  it("uses the same fixed destination for a valid slug HEAD request", async () => {
+    const response = await headStoreAlias(
+      new Request("https://buzzcafe.com.br/loja/outra-loja?source=qr", {
+        method: "HEAD",
+      }),
+      { params: Promise.resolve({ storeSlug: "outra-loja" }) },
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "https://pdv.buzzcafe.com.br/loja?source=qr",
+    );
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(await response.text()).toBe("");
+  });
+
+  it("does not expose a redirecting POST handler for the storefront", async () => {
+    const [storeRoute, storeAliasRoute] = await Promise.all([
+      import("@/app/loja/route"),
+      import("@/app/loja/[storeSlug]/route"),
+    ]);
+
+    expect(storeRoute).not.toHaveProperty("POST");
+    expect(storeAliasRoute).not.toHaveProperty("POST");
   });
 
   it("keeps the public API under the apex origin", async () => {
