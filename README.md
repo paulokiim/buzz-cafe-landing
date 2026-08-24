@@ -18,6 +18,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Loja pública
+
+`/loja` e `/loja/<slug>` redirecionam temporariamente para a vitrine hospedada
+no Sites em `https://pdv.buzzcafe.com.br/loja`, preservando os parâmetros da
+campanha. A landing não atua como proxy da API nem recebe credenciais do backend.
+
+As antigas rotas de proxy falham fechadas com `404` e `Cache-Control: no-store`:
+
+- `/api/public/<caminho>`
+- `/loja-assets/<caminho>`
+- `/media/<caminho>`
+
+Não há variável de ambiente da loja pública nesta aplicação. No rollout:
+
+1. publique e homologue primeiro o frontend do PDV/Sites e o backend Render;
+2. confirme que `https://pdv.buzzcafe.com.br/loja` está saudável;
+3. somente então publique este redirecionamento na landing.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
