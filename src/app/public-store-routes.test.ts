@@ -1,157 +1,69 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import {
-  GET as getPublicApi,
-  HEAD as headPublicApi,
-  OPTIONS as optionsPublicApi,
-  POST as postPublicApi,
-} from "@/app/api/public/[...path]/route";
-import {
-  GET as getStoreAsset,
-  HEAD as headStoreAsset,
-} from "@/app/loja-assets/[...path]/route";
-import {
-  GET as getStoreAlias,
-  HEAD as headStoreAlias,
-} from "@/app/loja/[storeSlug]/route";
-import { GET as getStore, HEAD as headStore } from "@/app/loja/route";
-import {
-  GET as getPublicMedia,
-  HEAD as headPublicMedia,
-} from "@/app/media/[...path]/route";
+import { GET as getPublicApi } from "@/app/api/public/[...path]/route";
+import { GET as getStoreAsset } from "@/app/loja-assets/[...path]/route";
+import { GET as getStoreAlias } from "@/app/loja/[storeSlug]/route";
+import { GET as getStore } from "@/app/loja/route";
+import { GET as getPublicMedia } from "@/app/media/[...path]/route";
+import { GET as getMenuImage } from "@/app/menu/[...path]/route";
 
-afterEach(() => {
-  vi.unstubAllGlobals();
-});
+afterEach(() => vi.unstubAllGlobals());
 
 describe("public storefront routes", () => {
-  it("temporarily redirects the primary store to the fixed PDV storefront", async () => {
-    const upstream = vi.fn<(request: Request) => Promise<Response>>();
+  it("keeps the primary store on www and proxies it to the Sites frontend", async () => {
+    const upstream = vi.fn<(request: Request) => Promise<Response>>(async () => new Response("<html>Buzz</html>", { headers: { "content-type": "text/html" } }));
     vi.stubGlobal("fetch", upstream);
-
-    const response = await getStore(
-      new Request(
-        "https://attacker.example/loja?utm_source=meta&item=latte%20buzz",
-      ),
-    );
-
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe(
-      "https://pdv.buzzcafe.com.br/loja?utm_source=meta&item=latte%20buzz",
-    );
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(upstream).not.toHaveBeenCalled();
+    const response = await getStore(new Request("https://www.buzzcafe.com.br/loja?utm_source=meta"));
+    expect(response.status).toBe(200);
+    expect(upstream.mock.calls[0]?.[0]).toBeInstanceOf(Request);
+    expect((upstream.mock.calls[0]?.[0] as Request).url).toBe("https://buzz-cafe-pdv.p12ulokr.chatgpt.site/loja?utm_source=meta");
   });
 
-  it("redirects HEAD without a response body", async () => {
-    const response = await headStore(
-      new Request("https://buzzcafe.com.br/loja?campaign=launch", {
-        method: "HEAD",
-      }),
-    );
-
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe(
-      "https://pdv.buzzcafe.com.br/loja?campaign=launch",
-    );
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.text()).toBe("");
+  it("normalizes the apex domain to the canonical www URL and preserves query parameters", async () => {
+    const response = await getStore(new Request("https://buzzcafe.com.br/loja?campaign=launch"));
+    expect(response.status).toBe(308);
+    expect(response.headers.get("location")).toBe("https://www.buzzcafe.com.br/loja?campaign=launch");
   });
 
-  it("normalizes the legacy primary-store slug to the fixed short PDV URL", async () => {
+  it("rejects an unexpected host instead of creating an open proxy", async () => {
+    const response = await getStore(new Request("https://attacker.example/loja"));
+    expect(response.status).toBe(400);
+  });
+
+  it("normalizes the primary legacy slug on www", async () => {
     const response = await getStoreAlias(
-      new Request(
-        "https://attacker.example/loja/loja-inicial?utm_medium=paid-social",
-      ),
+      new Request("https://www.buzzcafe.com.br/loja/loja-inicial?utm_medium=qr"),
       { params: Promise.resolve({ storeSlug: "loja-inicial" }) },
     );
-
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe(
-      "https://pdv.buzzcafe.com.br/loja?utm_medium=paid-social",
-    );
-    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.status).toBe(308);
+    expect(response.headers.get("location")).toBe("https://www.buzzcafe.com.br/loja?utm_medium=qr");
   });
 
-  it("uses the same fixed destination for a valid slug HEAD request", async () => {
-    const response = await headStoreAlias(
-      new Request("https://buzzcafe.com.br/loja/outra-loja?source=qr", {
-        method: "HEAD",
-      }),
-      { params: Promise.resolve({ storeSlug: "outra-loja" }) },
-    );
-
-    expect(response.status).toBe(307);
-    expect(response.headers.get("location")).toBe(
-      "https://pdv.buzzcafe.com.br/loja?source=qr",
-    );
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.text()).toBe("");
-  });
-
-  it("does not expose a redirecting POST handler for the storefront", async () => {
-    const [storeRoute, storeAliasRoute] = await Promise.all([
-      import("@/app/loja/route"),
-      import("@/app/loja/[storeSlug]/route"),
-    ]);
-
-    expect(storeRoute).not.toHaveProperty("POST");
-    expect(storeAliasRoute).not.toHaveProperty("POST");
-  });
-
-  it("fails closed locally for every obsolete proxy method", async () => {
-    const upstream = vi.fn(() => {
-      throw new Error("obsolete landing routes must not call fetch");
-    });
+  it("proxies storefront assets and both supported product-image namespaces", async () => {
+    const upstream = vi.fn<(request: Request) => Promise<Response>>(async () => new Response("image", { headers: { "content-type": "image/png" } }));
     vi.stubGlobal("fetch", upstream);
+    await getStoreAsset(new Request("https://www.buzzcafe.com.br/loja-assets/brand-logo.webp"), { params: Promise.resolve({ path: ["brand-logo.webp"] }) });
+    await getPublicMedia(new Request("https://www.buzzcafe.com.br/media/products/latte.webp"), { params: Promise.resolve({ path: ["products", "latte.webp"] }) });
+    await getMenuImage(new Request("https://www.buzzcafe.com.br/menu/iced_latte.png"), { params: Promise.resolve({ path: ["iced_latte.png"] }) });
+    expect(upstream.mock.calls.map(([request]) => (request as Request).url)).toEqual([
+      "https://buzz-cafe-pdv.p12ulokr.chatgpt.site/loja-assets/brand-logo.webp",
+      "https://buzz-cafe-pdv.p12ulokr.chatgpt.site/media/products/latte.webp",
+      "https://buzz-cafe-pdv.p12ulokr.chatgpt.site/menu/iced_latte.png",
+    ]);
+  });
 
-    const cases = [
-      getPublicApi(
-        new Request("http://localhost:3001/api/public/stores/loja-inicial/catalog"),
-      ),
-      headPublicApi(
-        new Request("http://localhost:3001/api/public/stores/loja-inicial/catalog", {
-          method: "HEAD",
-        }),
-      ),
-      optionsPublicApi(
-        new Request("http://localhost:3001/api/public/stores/loja-inicial/catalog", {
-          method: "OPTIONS",
-        }),
-      ),
-      postPublicApi(
-        new Request("http://localhost:3001/api/public/stores/loja-inicial/checkouts", {
-          body: '{"items":[]}',
-          headers: { "content-type": "application/json" },
-          method: "POST",
-        }),
-      ),
-      getStoreAsset(
-        new Request("http://localhost:3001/loja-assets/brand-logo.webp"),
-      ),
-      headStoreAsset(
-        new Request("http://localhost:3001/loja-assets/brand-logo.webp", {
-          method: "HEAD",
-        }),
-      ),
-      getPublicMedia(
-        new Request("http://localhost:3001/media/products/iced-latte.webp"),
-      ),
-      headPublicMedia(
-        new Request("http://localhost:3001/media/products/iced-latte.webp", {
-          method: "HEAD",
-        }),
-      ),
-    ];
+  it("turns an upstream app-shell fallback into a missing product image", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("<html>PDV shell</html>", { headers: { "content-type": "text/html" } })));
+    const [media, menu] = await Promise.all([
+      getPublicMedia(new Request("https://www.buzzcafe.com.br/media/missing.webp"), { params: Promise.resolve({ path: ["missing.webp"] }) }),
+      getMenuImage(new Request("https://www.buzzcafe.com.br/menu/missing.webp"), { params: Promise.resolve({ path: ["missing.webp"] }) }),
+    ]);
+    expect(media.status).toBe(404);
+    expect(menu.status).toBe(404);
+  });
 
-    for (const response of cases) {
-      expect(response).toBeInstanceOf(Response);
-      expect(response.status).toBe(404);
-      expect(response.headers.get("cache-control")).toBe("no-store");
-    }
-    expect(upstream).not.toHaveBeenCalled();
-    expect(await cases[1]!.text()).toBe("");
-    expect(await cases[5]!.text()).toBe("");
-    expect(await cases[7]!.text()).toBe("");
+  it("keeps the obsolete landing API closed", async () => {
+    const response = await getPublicApi(new Request("https://www.buzzcafe.com.br/api/public/stores/loja-inicial/catalog"));
+    expect(response.status).toBe(404);
   });
 });
