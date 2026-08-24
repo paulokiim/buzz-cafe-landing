@@ -22,6 +22,11 @@ describe("metadata routes", () => {
         changeFrequency: "weekly",
         priority: 1,
       }),
+      expect.objectContaining({
+        url: "https://www.buzzcafe.com.br/loja",
+        changeFrequency: "daily",
+        priority: 0.9,
+      }),
     ]);
   });
 });

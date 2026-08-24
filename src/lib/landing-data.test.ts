@@ -6,6 +6,7 @@ import {
   HERO_SEO_TITLE,
   ORDER_REWARD,
   ORDER_REWARD_LABEL,
+  OUTBOUND_ORDER_UTMS,
   cafeJsonLd,
   channels,
   faqItems,
@@ -49,17 +50,26 @@ describe("landing data contract", () => {
   });
 
   it("uses the store deep links even when hosted env values are unavailable", () => {
-    expect(channels.map(({ href, key }) => ({ href, key }))).toEqual([
-      { href: fallbackChannelLinks.ifood, key: "ifood" },
-      { href: fallbackChannelLinks.keeta, key: "keeta" },
-      { href: fallbackChannelLinks["99food"], key: "99food" },
-    ]);
     expect(fallbackChannelLinks).toEqual({
       ifood:
         "https://ifood.com.br/delivery/sao-paulo-sp/buzz-cafe-bras/f82204bc-fb5d-4d71-950f-fda218b23ac9?utm_medium=share",
       keeta: "https://url-eu.mykeeta.com/NikFPhsz",
       "99food": "https://oia.99app.com/dlp9/JIFaZ7",
     });
+
+    for (const channel of channels) {
+      const url = new URL(channel.href);
+
+      expect(`${url.origin}${url.pathname}`).toBe(
+        `${new URL(fallbackChannelLinks[channel.key]).origin}${
+          new URL(fallbackChannelLinks[channel.key]).pathname
+        }`
+      );
+      expect(Object.fromEntries(url.searchParams)).toMatchObject({
+        ...OUTBOUND_ORDER_UTMS,
+        utm_content: channel.key,
+      });
+    }
   });
 
   it("presents Keeta as an order channel, not as a freight-comparison path", () => {
